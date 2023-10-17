@@ -84,7 +84,7 @@ resource "aws_iam_policy" "bootstrap" {
           "s3:ListBucket"
         ],
         "Resource" : [
-          "arn:aws:s3:::*"
+          "${aws_s3_bucket.bootstrap.arn}"
         ]
       },
       {
@@ -93,7 +93,7 @@ resource "aws_iam_policy" "bootstrap" {
           "s3:GetObject"
         ],
         "Resource" : [
-          "arn:aws:s3:::*"
+          "${aws_s3_bucket.bootstrap.arn}/*"
         ]
       }
     ]

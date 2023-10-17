@@ -1,6 +1,15 @@
+# terraform-aws-palo-bootstrap
+- This module creates S3 bucket, load with pre-configured bootstrap configuration for Palo Alto Firewall in AWS.
+- This module also create IAM role and policy, so that the FW instance can assume the role to retrieve bootstrap configuration from the S3 bucket.
+- The exported bootstrap_bucket_name and iam_role can be used by Aviatrix resource: aviatrix_firewall_instance for bootstrap purpose.
+- Pre-configured Palo configuration is stored under config/bootstrap.xml. eth1/2 is trusted network LAN, and eth1/1 is un-trusted network WAN.
+    - Username: **admin**
+    - Password: **yGNaoO3gzRtzwnzp**
+- config/bootstrap.xml was exported from Palo VM series 11.0.2
+- You may consider use config/init-cfg.txt for Panorama instead 
+    - https://docs.paloaltonetworks.com/vm-series/11-0/vm-series-deployment/bootstrap-the-vm-series-firewall/create-the-init-cfgtxt-file/init-cfgtxt-file-components
 
-
-# Interface configuration
+## Pre-configured Palo configuration
 - Assign eth1/2 as 'Layer3' interface type. Enable eth1/2 as 'DHCP client', and uncheck 'Automatically create default route pointing to default gateway provided by server'
 ![](2023-10-17-10-11-42.png)
 - Assign eth1/2 to Virtual Router 'default'. Create new security zone 'LAN' and assign eth1/2 as LAN
@@ -15,7 +24,7 @@
 ![](2023-10-17-10-46-36.png)
 - Create policy for catch all rest of traffic and deny it
 ![](2023-10-17-10-47-47.png)
-- All policies and it's order
+- This screenshot shows all policies and their order
 ![](2023-10-17-10-48-20.png)
 - Create source NAT route for LAN -> WAN traffic to be SNAT to eth1/1 IP
 ![](2023-10-17-10-49-56.png)
@@ -24,7 +33,7 @@
 - Assign this health check Interface Mgmt profile with eth1/2
 ![](2023-10-17-12-02-11.png)
 
-# providers.tf
+## providers.tf
 You will need to populate providers.tf, example
 ```
 terraform {
@@ -41,4 +50,23 @@ provider "aws" {
   region = "us-east-1"
 }
 ```
+
+## Palo route table
+Please use aviatrix_firenet_vendor_integration Data resource to manage Palo route table
+https://registry.terraform.io/providers/AviatrixSystems/aviatrix/latest/docs/data-sources/aviatrix_firenet_vendor_integration
+
+## Palo Security Group
+Aviatrix Controller programs following entries for Palo Security Group.
+By default it allows Controller Public IP access to Palo Management interface on following ports:
+- icmp: Health check
+- tcp 443: Management (You may need to add your egress public IP to access Palo Management Web interface)
+- tcp 3978: Panorama access, please replace it with correct IP
+![](2023-10-17-17-24-18.png)
+
+## Sample usage
+
+
+## Reference
+https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-in-aws
+
 
