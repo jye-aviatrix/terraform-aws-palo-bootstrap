@@ -44,14 +44,14 @@ resource "aws_s3_object" "folder_software" {
 resource "aws_s3_object" "xml" {
   bucket = aws_s3_bucket.bootstrap.id
   key    = "config/bootstrap.xml"
-  source = "config/bootstrap.xml"
+  source = "${path.module}/config/bootstrap.xml"
 }
 
 #upload init-cfg.txt to config folder
 resource "aws_s3_object" "init" {
   bucket = aws_s3_bucket.bootstrap.id
   key    = "config/init-cfg.txt"
-  source = "config/init-cfg.txt"
+  source = "${path.module}/config/init-cfg.txt"
 }
 
 # Construct policy document for FW instance to be able to assume role.
