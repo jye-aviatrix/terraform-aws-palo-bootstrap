@@ -33,3 +33,4 @@ override.tf.json
 .terraform.lock.hcl
 
 providers.tf
+.DS_Store
