@@ -90,7 +90,8 @@ resource "aviatrix_firewall_instance" "region1_ew_fw_1" {
   # Reference the iam_role and bootstrap_bucket_name output from this module
   iam_role = module.palo-bootstrap.iam_role
   bootstrap_bucket_name = module.palo-bootstrap.bootstrap_bucket_name
-}```
+}
+```
 
 ## Reference
 https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-in-aws
