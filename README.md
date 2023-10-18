@@ -68,7 +68,7 @@ By default it allows Controller Public IP access to Palo Management interface on
 # Bootstrap S3 bucket and IAM Role
 module "palo-bootstrap" {
   source  = "jye-aviatrix/palo-bootstrap/aws"
-  version = "1.0.3"
+  version = "1.0.5"
   providers = {
     aws = aws.ue1
   }
