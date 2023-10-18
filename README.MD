@@ -64,7 +64,33 @@ By default it allows Controller Public IP access to Palo Management interface on
 ![](2023-10-17-17-24-18.png)
 
 ## Sample usage
+```
+# Bootstrap S3 bucket and IAM Role
+module "palo-bootstrap" {
+  source  = "jye-aviatrix/palo-bootstrap/aws"
+  version = "1.0.2"
+  providers = {
+    aws = aws.ue1
+  }
+}
 
+## Region 1
+# Firewall instance for region1 E/W FW
+resource "aviatrix_firewall_instance" "region1_ew_fw_1" {
+  firewall_name          = "${var.region1_code}-ew-fw-1"
+  firewall_size          = "m5.xlarge"
+  vpc_id                 = aviatrix_vpc.region1_ew_firenet.vpc_id
+  firewall_image         = "Palo Alto Networks VM-Series Next-Generation Firewall (BYOL)"
+  firewall_image_version = "11.0.2"
+  egress_subnet          = element([for s in aviatrix_vpc.region1_ew_firenet.public_subnets : s["cidr"] if strcontains(s["name"], "Public-FW-ingress-egress")], 0)
+  firenet_gw_name        = aviatrix_transit_gateway.region1_ew_transit_firenet.gw_name
+
+  management_subnet = element([for s in aviatrix_vpc.region1_ew_firenet.public_subnets : s["cidr"] if strcontains(s["name"], "Public-gateway-and-firewall-mgmt")], 0)
+
+  # Reference the iam_role and bootstrap_bucket_name output from this module
+  iam_role = module.palo-bootstrap.iam_role
+  bootstrap_bucket_name = module.palo-bootstrap.bootstrap_bucket_name
+}```
 
 ## Reference
 https://docs.paloaltonetworks.com/vm-series/9-1/vm-series-deployment/bootstrap-the-vm-series-firewall/bootstrap-the-vm-series-firewall-in-aws
